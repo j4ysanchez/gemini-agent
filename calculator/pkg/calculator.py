@@ -1,7 +1,7 @@
 # calculator.py
 
 class Calculator:
-    def init(self):
+    def __init__(self):
         self.operators = {
             "+": lambda a, b: a + b,
             "-": lambda a, b: a - b,
@@ -24,7 +24,7 @@ class Calculator:
         return self._evaluate_infix(tokens)
 
 
-    def evaluateinfix(self, tokens):
+    def _evaluate_infix(self, tokens):
         values = []
         operators = []
 
@@ -52,7 +52,7 @@ class Calculator:
 
         return values[0]
 
-    def applyoperator(self, operators, values):
+    def _apply_operator(self, operators, values):
         if not operators:
             return
 
