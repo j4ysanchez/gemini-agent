@@ -1,4 +1,23 @@
 import os
+from google.genai import types
+
+schema_write_file = types.FunctionDeclaration(
+    name="write_file",
+    description="Overwrites existing files or writes a file if it does not exist.  Creates parent dirs safely",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path of the file to write.",
+            ),
+            "content": types.Schema(
+                type=types.Type.STRING,
+                description="The content to be written to a file",
+            ),
+        },
+    ),
+)
 
 
 
