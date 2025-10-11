@@ -31,8 +31,9 @@ def main():
     if len(sys.argv) == 3 and sys.argv[1] == "--verbose":
         verbose_flag = True
         print ("verbose mode on")
-
-    prompt = sys.argv[2]
+        prompt = sys.argv[2]
+    else:
+        prompt = sys.argv[1]
 
     system_prompt = """
 You are a helpful AI coding agent.
@@ -69,33 +70,44 @@ All paths you provide should be relative to the working directory. You do not ne
         tools=[available_functions], system_instruction=system_prompt
     )
 
-    
-    # print(f"Prompt: {prompt}")
+    max_iterations = 20
+    for i in range(0, max_iterations):
 
-    response = client.models.generate_content(
-        model = "gemini-2.0-flash-001", 
-        contents=messages,
-        config=config
-        )
+        response = client.models.generate_content(
+            model = "gemini-2.0-flash-001", 
+            contents=messages,
+            config=config
+            )
 
-    if verbose_flag:
-        print(f"User prompt: {prompt}")
-        # print(f"System prompt: {system_prompt}")
-        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+        if verbose_flag:
+            print(f"User prompt: {prompt}")
+            # print(f"System prompt: {system_prompt}")
+            print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+            print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
 
 
-    if response is None or response.usage_metadata is None:
-        print("response is malformed:")
-        exit(1)
-    
+        if response is None or response.usage_metadata is None:
+            print("response is malformed:")
+            exit(1)
+        
+        # Put all tools you want to call into the array
+        if response.candidates:
+            for candidate in response.candidates:
+                if candidate is None or candidate.content is None:
+                    continue    
+                messages.append(candidate.content)
 
-    if response.function_calls:
-        for function_call_part in response.function_calls:
-            result = call_function(function_call_part, verbose_flag)
-            # print(result)
+        # Call any functions
+        if response.function_calls:
+            for function_call_part in response.function_calls:
+                result = call_function(function_call_part, verbose_flag)
+                # print(result)
+                messages.append(result)
+        else:
+            # final agent text message
+            print(response.text)
+            return
 
-    # print(response.text)
 
     
 
