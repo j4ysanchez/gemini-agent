@@ -42,7 +42,7 @@ class Calculator:
                 try:
                     values.append(float(token))
                 except ValueError:
-                    raise ValueError(f"invalid token: {token}")
+                    raise ValueError(f"invalid token: '{token}'. Only numbers and operators (+, -, *, /) are allowed.")
 
         while operators:
             self._apply_operator(operators, values)
